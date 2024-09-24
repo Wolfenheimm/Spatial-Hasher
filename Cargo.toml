@@ -1,8 +1,8 @@
 [package]
 name = "spatial-hasher"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
-description = "A Rust library for deterministic encryption using 3D spatial parameters. It utilizes a combination of a 3D point, a rotation axis, the number of iterations, and a strength parameter to seed a pseudo-random number generator (PRNG)."
+description = "A Rust library for deterministic encryption and decryption using 3D spatial parameters with secure authenticated encryption."
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/Wolfenheimm/Spatial-Hasher"
@@ -10,7 +10,8 @@ keywords = ["encryption", "hashing", "3D", "rust"]
 categories = ["cryptography", "data-structures"]
 
 [dependencies]
+chacha20poly1305 = "0.10"
 rand = "0.8"
-rand_xoshiro = "0.6"
-serde = { version = "1.0", features = ["derive"] }
+rand_chacha = "0.3"
 sha2 = "0.10"
+serde = { version = "1.0", features = ["derive"] }
