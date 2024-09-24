@@ -1,6 +1,6 @@
 [package]
 name = "spatial-hasher"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 description = "A Rust library for deterministic encryption and decryption using 3D spatial parameters with secure authenticated encryption."
 license = "MIT"

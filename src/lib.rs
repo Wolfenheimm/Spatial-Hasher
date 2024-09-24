@@ -1,4 +1,4 @@
-//! SpaceHasher: A library for deterministic encryption using 3D spatial parameters.
+//! Spatial Hasher: A library for deterministic encryption using 3D spatial parameters.
 
 mod point3d;
 mod rotation_axis;

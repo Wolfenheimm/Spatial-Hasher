@@ -13,7 +13,7 @@ fn main() {
         z: 0.0,
     };
 
-    // Create a new SpaceHasher instance
+    // Create a new Spatial Hasher instance
     let hasher = Spha256::new(point, axis, 10, 0.1);
 
     // Original data to be encrypted
