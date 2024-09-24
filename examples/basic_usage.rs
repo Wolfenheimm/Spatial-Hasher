@@ -28,7 +28,7 @@ fn main() {
     println!("Encrypted Data: {:?}", encrypted);
 
     // Decrypt the data
-    let decrypted = hasher.decrypt(&encrypted);
+    let decrypted = hasher.decrypt(&encrypted).expect("Decryption failed");
     println!("Decrypted Data: {:?}", String::from_utf8_lossy(&decrypted));
 
     // Verify that the decrypted data matches the original data

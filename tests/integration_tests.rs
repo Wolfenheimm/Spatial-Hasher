@@ -16,7 +16,9 @@ fn test_encryption_decryption() {
 
     let data = b"Test Data";
     let encrypted = hasher.encrypt(data);
-    let decrypted = hasher.decrypt(&encrypted);
+
+    // Handle the Result returned by decrypt
+    let decrypted = hasher.decrypt(&encrypted).expect("Decryption failed");
 
     assert_eq!(data, &decrypted[..]);
 }

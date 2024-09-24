@@ -1,11 +1,15 @@
 use crate::{Point3D, RotationAxis};
-use rand::{RngCore, SeedableRng};
-use rand_xoshiro::Xoshiro256PlusPlus;
+use chacha20poly1305::{
+    aead::{Aead, KeyInit, OsRng},
+    ChaCha20Poly1305, Nonce,
+};
+use rand::RngCore;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+
 /// A hasher that uses a 3D point and a rotation axis to encrypt and decrypt data.
 ///
-/// The `Spha256` struct provides methods for encrypting and decrypting data based on a deterministic algorithm. It utilizes a pseudo-random number generator (PRNG) seeded with a hash of its parameters.
+/// The `Spha256` struct provides methods for encrypting and decrypting data based on a deterministic algorithm. It derives a cryptographic key from its parameters and uses the ChaCha20-Poly1305 authenticated encryption algorithm for secure encryption and decryption.
 ///
 /// # Examples
 ///
@@ -63,37 +67,35 @@ impl Spha256 {
         }
     }
 
-    /// Generates a 256-bit seed for the pseudo-random number generator (PRNG) by hashing the hasher's parameters.
+    /// Generates a 256-bit key by hashing the hasher's parameters.
     ///
-    /// This function uses the SHA-256 hash function to create a seed based on the bit representations of the `point`, `rotation_axis`, `iterations`, and `strength` fields. The seed is used to initialize the PRNG in the [`encrypt`](#method.encrypt) and [`decrypt`](#method.decrypt) methods.
+    /// This function uses the SHA-256 hash function to create a key based on the bit representations of the `point`, `rotation_axis`, `iterations`, and `strength` fields. The key is used in the [`encrypt`](#method.encrypt) and [`decrypt`](#method.decrypt) methods with the ChaCha20-Poly1305 cipher.
     ///
     /// # Returns
     ///
-    /// A 32-byte array representing the seed for the PRNG.
-    fn generate_seed(&self) -> [u8; 32] {
+    /// A 32-byte array representing the encryption key.
+    fn generate_key(&self) -> [u8; 32] {
         let mut hasher = Sha256::new();
+        hasher.update(&self.point.x.to_bits().to_ne_bytes());
+        hasher.update(&self.point.y.to_bits().to_ne_bytes());
+        hasher.update(&self.point.z.to_bits().to_ne_bytes());
 
-        // Hash the bit representations of the floating-point numbers
-        hasher.update(self.point.x.to_bits().to_ne_bytes());
-        hasher.update(self.point.y.to_bits().to_ne_bytes());
-        hasher.update(self.point.z.to_bits().to_ne_bytes());
+        hasher.update(&self.rotation_axis.x.to_bits().to_ne_bytes());
+        hasher.update(&self.rotation_axis.y.to_bits().to_ne_bytes());
+        hasher.update(&self.rotation_axis.z.to_bits().to_ne_bytes());
 
-        hasher.update(self.rotation_axis.x.to_bits().to_ne_bytes());
-        hasher.update(self.rotation_axis.y.to_bits().to_ne_bytes());
-        hasher.update(self.rotation_axis.z.to_bits().to_ne_bytes());
-
-        hasher.update(self.iterations.to_ne_bytes());
-        hasher.update(self.strength.to_bits().to_ne_bytes());
+        hasher.update(&self.iterations.to_ne_bytes());
+        hasher.update(&self.strength.to_bits().to_ne_bytes());
 
         let result = hasher.finalize();
-        let mut seed = [0u8; 32];
-        seed.copy_from_slice(&result[..32]);
-        seed
+        let mut key = [0u8; 32];
+        key.copy_from_slice(&result[..32]);
+        key
     }
 
-    /// Encrypts the provided data using the hasher's parameters.
+    /// Encrypts the provided data using the ChaCha20-Poly1305 authenticated encryption algorithm.
     ///
-    /// This method encrypts the input data by XORing each byte with a byte generated from a pseudo-random number generator (PRNG). The PRNG is seeded using the [`generate_seed`](#method.generate_seed) method, ensuring that the encryption is deterministic based on the hasher's parameters.
+    /// This method encrypts the input data using the ChaCha20-Poly1305 cipher, with a key derived from the hasher's parameters via the [`generate_key`](#method.generate_key) method. A random nonce is generated for each encryption operation to ensure uniqueness and security. The nonce is prepended to the ciphertext for use during decryption.
     ///
     /// # Arguments
     ///
@@ -101,7 +103,7 @@ impl Spha256 {
     ///
     /// # Returns
     ///
-    /// A `Vec<u8>` containing the encrypted data.
+    /// A `Vec<u8>` containing the encrypted data, with the nonce prepended.
     ///
     /// # Examples
     ///
@@ -115,27 +117,41 @@ impl Spha256 {
     /// let encrypted = hasher.encrypt(data);
     /// ```
     pub fn encrypt(&self, data: &[u8]) -> Vec<u8> {
-        let seed = self.generate_seed();
-        let mut rng = Xoshiro256PlusPlus::from_seed(seed);
-        data.iter()
-            .map(|&byte| {
-                let rand_byte = rng.next_u32() as u8;
-                byte ^ rand_byte
-            })
-            .collect()
+        // Derive key from parameters
+        let key = self.generate_key();
+        let cipher = ChaCha20Poly1305::new(&key.into());
+
+        // Generate a random nonce (12 bytes for ChaCha20-Poly1305)
+        let mut nonce_bytes = [0u8; 12];
+        OsRng.fill_bytes(&mut nonce_bytes);
+        let nonce = Nonce::from_slice(&nonce_bytes);
+
+        // Encrypt the data
+        let ciphertext = cipher.encrypt(nonce, data).expect("Encryption failed");
+
+        // Prepend nonce to ciphertext
+        let mut encrypted = Vec::with_capacity(nonce_bytes.len() + ciphertext.len());
+        encrypted.extend_from_slice(&nonce_bytes);
+        encrypted.extend_from_slice(&ciphertext);
+
+        encrypted
     }
 
-    /// Decrypts the provided data using the hasher's parameters.
+    /// Decrypts the provided data using the ChaCha20-Poly1305 authenticated decryption algorithm.
     ///
-    /// The decryption process is identical to the encryption process since the XOR operation is symmetric. The method uses the same PRNG sequence as in [`encrypt`](#method.encrypt), ensuring that the original data is recovered when the same parameters are used.
+    /// This method decrypts the input data using the ChaCha20-Poly1305 cipher, with a key derived from the hasher's parameters via the [`generate_key`](#method.generate_key) method. The nonce used during encryption is expected to be prepended to the encrypted data and is extracted during decryption.
     ///
     /// # Arguments
     ///
-    /// * `encrypted` - A slice of bytes representing the encrypted data.
+    /// * `encrypted` - A slice of bytes representing the encrypted data, with the nonce prepended.
     ///
     /// # Returns
     ///
-    /// A `Vec<u8>` containing the decrypted data.
+    /// A `Result<Vec<u8>, &'static str>` containing the decrypted data on success, or an error message on failure.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the decryption fails, such as when the ciphertext has been tampered with or the parameters do not match those used during encryption.
     ///
     /// # Examples
     ///
@@ -146,11 +162,26 @@ impl Spha256 {
     /// let hasher = Spha256::new(point, axis, 10, 0.1);
     ///
     /// let encrypted = hasher.encrypt(b"Secret Message");
-    /// let decrypted = hasher.decrypt(&encrypted);
+    /// let decrypted = hasher.decrypt(&encrypted).expect("Decryption failed");
     /// assert_eq!(decrypted, b"Secret Message");
     /// ```
-    pub fn decrypt(&self, encrypted: &[u8]) -> Vec<u8> {
-        // Decryption is the same as encryption in XOR cipher
-        self.encrypt(encrypted)
+    pub fn decrypt(&self, encrypted: &[u8]) -> Result<Vec<u8>, &'static str> {
+        if encrypted.len() < 12 {
+            return Err("Ciphertext too short to contain nonce");
+        }
+
+        let (nonce_bytes, ciphertext) = encrypted.split_at(12);
+        let nonce = Nonce::from_slice(nonce_bytes);
+
+        // Derive key from parameters
+        let key = self.generate_key();
+        let cipher = ChaCha20Poly1305::new(&key.into());
+
+        // Decrypt the data
+        let plaintext = cipher
+            .decrypt(nonce, ciphertext)
+            .map_err(|_| "Decryption failed")?;
+
+        Ok(plaintext)
     }
 }
