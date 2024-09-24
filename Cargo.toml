@@ -1,6 +1,6 @@
 [package]
 name = "spatial-hasher"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "A Rust library for deterministic encryption using 3D spatial parameters. It utilizes a combination of a 3D point, a rotation axis, the number of iterations, and a strength parameter to seed a pseudo-random number generator (PRNG)."
 license = "MIT"

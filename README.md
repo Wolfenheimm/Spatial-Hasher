@@ -23,6 +23,8 @@ A Rust library for deterministic encryption and decryption using 3D spatial para
 
 `spatial_hasher` provides a way to encrypt and decrypt data using a deterministic algorithm based on 3D spatial transformations. It utilizes a combination of a 3D point, a rotation axis, the number of iterations, and a strength parameter to seed a pseudo-random number generator (PRNG). This ensures that the same input parameters will always produce the same encrypted output.
 
+![Alt Text](assets/spha256.png)
+
 ## Features
 
 - **Deterministic Encryption and Decryption**: Ensures consistent results with the same parameters.
