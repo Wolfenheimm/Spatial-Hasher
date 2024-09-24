@@ -1,19 +1,29 @@
+//! The `rotation_axis` module provides the `RotationAxis` struct, representing an axis of rotation in 3D space.
+
 use serde::{Deserialize, Serialize};
 use std::hash::{Hash, Hasher};
-/// Represents a rotation axis in 3D space.
+/// Represents an axis of rotation in 3D space.
 ///
-/// The `RotationAxis` struct defines an axis of rotation using `x`, `y`, and `z` components.
+/// # Fields
+///
+/// - `x`: The x-component of the rotation axis.
+/// - `y`: The y-component of the rotation axis.
+/// - `z`: The z-component of the rotation axis.
 ///
 /// # Examples
 ///
 /// ```
 /// use spatial_hasher::RotationAxis;
+///
 /// let axis = RotationAxis { x: 0.0, y: 1.0, z: 0.0 };
 /// ```
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct RotationAxis {
+    /// The x-component of the rotation axis.
     pub x: f64,
+    /// The y-component of the rotation axis.
     pub y: f64,
+    /// The z-component of the rotation axis.
     pub z: f64,
 }
 

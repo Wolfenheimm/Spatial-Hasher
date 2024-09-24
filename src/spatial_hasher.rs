@@ -1,3 +1,19 @@
+//! The `spatial_hasher` module provides the `Spha256` struct and related functionality for encryption and decryption using spatial parameters.
+//!
+//! ## Structs
+//!
+//! - [`Point3D`]: Represents a point in 3D space.
+//! - [`RotationAxis`]: Represents a rotation axis in 3D space.
+//! - [`Spha256`]: Core struct for encryption and decryption.
+//!
+//! ## Usage
+//!
+//! (Include usage examples specific to this module)
+//!
+//! [`Point3D`]: crate::spatial_hasher::Point3D
+//! [`RotationAxis`]: crate::spatial_hasher::RotationAxis
+//! [`Spha256`]: crate::spatial_hasher::Spha256
+
 use crate::{Point3D, RotationAxis};
 use chacha20poly1305::{
     aead::{Aead, KeyInit, OsRng},

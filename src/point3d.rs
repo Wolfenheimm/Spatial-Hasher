@@ -1,20 +1,30 @@
+//! The `point3d` module provides the `Point3D` struct, representing a point in 3D space.
+
 use serde::{Deserialize, Serialize};
 use std::hash::{Hash, Hasher};
 
-/// Represents a point in 3D space with floating-point coordinates.
+/// Represents a point in 3D space.
 ///
-/// The `Point3D` struct defines a point in three-dimensional space using `x`, `y`, and `z` coordinates.
+/// # Fields
+///
+/// - `x`: The x-coordinate.
+/// - `y`: The y-coordinate.
+/// - `z`: The z-coordinate.
 ///
 /// # Examples
 ///
 /// ```
 /// use spatial_hasher::Point3D;
+///
 /// let point = Point3D { x: 1.0, y: 2.0, z: 3.0 };
 /// ```
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Point3D {
+    /// The x-coordinate.
     pub x: f64,
+    /// The y-coordinate.
     pub y: f64,
+    /// The z-coordinate.
     pub z: f64,
 }
 

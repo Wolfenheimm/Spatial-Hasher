@@ -1,13 +1,15 @@
 [package]
 name = "spatial-hasher"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 description = "A Rust library for deterministic encryption and decryption using 3D spatial parameters with secure authenticated encryption."
 license = "MIT"
+homepage = "https://github.com/Wolfenheimm/spatial-hasher"
+documentation = "https://docs.rs/spatial_hasher"
 readme = "README.md"
 repository = "https://github.com/Wolfenheimm/Spatial-Hasher"
-keywords = ["encryption", "hashing", "3D", "rust"]
-categories = ["cryptography", "data-structures"]
+keywords = ["encryption", "hashing", "3D", "rust", "crypto"]
+categories = ["cryptography", "encoding"]
 
 [dependencies]
 chacha20poly1305 = "0.10"
