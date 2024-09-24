@@ -25,7 +25,7 @@
 //! ## Architecture
 //!
 //! The `Spha256` struct is the core of this library. It uses the spatial parameters to generate a cryptographic key and perform encryption and decryption using the ChaCha20-Poly1305 algorithm.
-//! ![Diagram](https://raw.githubusercontent.com/Wolfenheimm/spatial-hasher/main/assets/architecture_diagram.png)
+//! ![Diagram](https://raw.githubusercontent.com/Wolfenheimm/spatial-hasher/main/assets/spha256.png)
 //!
 //! ### **Key Derivation**
 //!
