@@ -1,13 +1,11 @@
 [package]
 name = "spatial-hasher"
 version = "0.1.0"
-authors = ["Your Name <your.email@example.com>"]
 edition = "2021"
 description = "A Rust library for deterministic encryption using 3D spatial parameters."
 license = "MIT"
 readme = "README.md"
-repository = "TODO"
-documentation = "https://docs.rs/spacehasher"
+repository = "https://github.com/Wolfenheimm/Spatial-Hasher"
 keywords = ["encryption", "hashing", "3D", "rust"]
 categories = ["cryptography", "data-structures"]
 

@@ -1,4 +1,4 @@
-# spatial_hasher
+# Spatial Hasher
 
 A Rust library for deterministic encryption and decryption using 3D spatial parameters.
 
@@ -8,7 +8,7 @@ A Rust library for deterministic encryption and decryption using 3D spatial para
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Creating a `spatial_hasher` Instance](#creating-a-spatial_hasher-instance)
+  - [Creating a Spatial Hasher Instance](#creating-a-spatial_hasher-instance)
   - [Encrypting Data](#encrypting-data)
   - [Decrypting Data](#decrypting-data)
 - [Example](#example)
