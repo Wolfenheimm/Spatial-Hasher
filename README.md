@@ -37,12 +37,6 @@ Add `spatial_hasher` to your `Cargo.toml` dependencies:
 
 ```toml
 [dependencies]
-spatial_hasher = { path = "/path/to/spatial_hasher" }
-```
-Replace "/path/to/spatial_hasher" with the actual path to the library. If the library is published on crates.io, you can specify the version:
-
-```toml
-[dependencies]
 spatial_hasher = "0.1.0"
 ```
 
